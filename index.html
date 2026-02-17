@@ -100,72 +100,461 @@ body::before {
     </div>
   </div>
 </div>
-
 <script>
-// --- 劇本資料 (改寫為 VN 扁平化結構) ---
-// 把原本的 atm, lines, thought 攤平成一個個 frame，這樣才能逐句點擊
-const SCRIPT = {
+// ==========================================
+// 劇本區塊 1：覺醒與創傷回溯 (Scene 1 ~ Scene 5)
+// ==========================================
+const PART_1_AWAKENING = {
+  // --- Scene 1: 療養院出院 ---
   p1: [
-    { type: 'sys', text: '【 序章 · 崩潰的清晨 】' },
-    { type: 'atm', text: '白色的天花板。刺眼的日光燈。空氣中有消毒水的味道。窗外是灰色的天空。' },
-    { sp: 'Fang', text: '我……在哪裡……' },
-    { sp: 'Fang', text: '頭好痛……' },
-    { type: 'thought', text: '我試著回憶發生了什麼事。但腦子一片空白。只有一個模糊的感覺——我崩潰了。', next: 'p2' }
-  ],
-  p2: [
-    { type: 'atm', text: '我撐起身體，看向床頭櫃。一張折疊的卡片靜靜躺在那裡。' },
-    { sp: '卡片', text: '「歡迎來到灰城療養中心。您已經在這裡休息了三個月。今天是您的出院日。」' },
-    { type: 'thought', text: '三個月……我失去了三個月的時間。', choices: [
-      { tag: '職場創傷', text: '工作。老闆說「我們像一家人」。但我暈倒時沒人在乎。', next: 'p4', sys: '回憶：職場' },
-      { tag: '家庭創傷', text: '家庭。父母說「你欠我們的」。我轉出最後一筆錢後倒下了。', next: 'p4', sys: '回憶：家庭' },
-      { tag: '關係創傷', text: '感情。伴侶說「你是我的全世界」。我失去了所有朋友。', next: 'p4', sys: '回憶：關係' }
+    { type: 'sys', text: '【 CHAPTER 1: 寄生蟲解剖學 】' },
+    { type: 'sys', text: '【 Scene 1: 療養院出院 】' },
+    { type: 'atm', text: '灰城療養院，出院大廳。\n白色的牆壁，白色的天花板，白色的制服。\n所有東西都乾淨得令人窒息。' },
+    { type: 'thought', text: '三個月了。三個月前，我還是那個「人人都愛的好人」。' },
+    { type: 'thought', text: '永遠說好，永遠妥協，永遠把自己放在最後。直到我的身體替我說了「不」。' },
+    { type: 'atm', text: '窗外是灰濛濛的天空。這座城市總是這樣——不下雨，但也不放晴。' },
+    { sp: '護理師', text: 'Fang，你的康復導師來接你了。' },
+    { type: 'thought', text: '康復導師。他們說這是「善良人綜合症」的標準療程——\n先住院穩定情緒，然後轉到社區康復中心。' },
+    { type: 'thought', text: '我不知道我能不能好起來。我只知道我不想再回到那個「被所有人踩的自己」。' },
+    { type: 'atm', text: '護理師溫柔地看著你。', choices: [
+      { tag: '舊模式：討好', text: '「謝謝你們這段時間的照顧。」', next: 's1_a' },
+      { tag: '新模式：簡潔', text: '「嗯。」', next: 's1_b' },
+      { tag: '守護者模式：穩定', text: '「我準備好了。」', next: 's1_c' }
     ]}
   ],
-  p4: [
-    { type: 'atm', text: '記憶像刀子切過來。清晰得讓人想逃。' },
-    { sp: 'Fang', text: '（低聲）我記起來了……' },
-    { type: 'thought', text: '我以為「善良」就是答應所有人。但最後——我失去了自己。' },
-    { type: 'atm', text: '門打開了。一位護理師輕輕走進來。' },
-    { sp: '護理師', text: 'Fang，你醒了。感覺怎麼樣？' },
-    { sp: 'Fang', text: '我……不知道。' },
-    { sp: '護理師', text: '沒關係。慢慢來。你今天可以出院了。有人在外面等你。', choices: [
-      { tag: '感謝', text: '「謝謝你這三個月的照顧。」', next: 'p8' },
-      { tag: '警戒', text: '「我不認識會來接我的人……」', next: 'p8' }
+  s1_a: [
+    { sp: '護理師', text: '你真的很懂事。我們會想念你的。' },
+    { type: 'thought', text: '「懂事」。這個詞曾經讓我驕傲。現在它只讓我感到噁心。' },
+    { type: 'sys', text: '舊模式迴路激活。注意：這是你的慣性反應。', next: 's2_meet' }
+  ],
+  s1_b: [
+    { sp: '護理師', text: '......好的。那我帶你去大廳。' },
+    { type: 'thought', text: '簡短。不解釋。不過度給予。這是治療師教我的第一課。' },
+    { type: 'sys', text: '新行為模式記錄。能量消耗：最小化。', next: 's2_meet' }
+  ],
+  s1_c: [
+    { sp: '護理師', text: '（微笑）很好。你看起來確實準備好了。' },
+    { type: 'thought', text: '穩定。清晰。不卑不亢。這就是我要學習的狀態。' },
+    { type: 'sys', text: '守護者回應識別。內在穩定度 +5。', stat: {awaken: 5}, next: 's2_meet' }
+  ],
+
+  // --- Scene 2: 第一次見到天狼 ---
+  s2_meet: [
+    { type: 'sys', text: '【 Scene 2: 第一次見到天狼 】' },
+    { type: 'atm', text: '出院大廳。一個人站在落地窗前，背對著光。\n那個人大約四十多歲，穿著深色的外套，雙手插在口袋裡。' },
+    { type: 'atm', text: '即使只是背影，也能感受到一種奇特的「靜」——不是軟弱的安靜，而是力量的沈澱。' },
+    { type: 'atm', text: '那個人轉過身。' },
+    { sp: '天狼', text: '你就是 Fang。' },
+    { type: 'thought', text: '這不是問句。' },
+    { sp: '天狼', text: '我是天狼。接下來的時間，我會陪你走一段路。' },
+    { type: 'thought', text: '天狼的眼神很特別。不是同情，不是審視，而是......認出。就像他看過同樣的風景。' },
+    { sp: '天狼', text: '準備好了嗎？', choices: [
+      { tag: '不確定', text: '「我不知道我能不能做到...」', next: 's2_a' },
+      { tag: '禮貌', text: '「請多指教。」', next: 's2_b' },
+      { tag: '直接', text: '「我想變強。」', next: 's2_c' }
     ]}
   ],
-  p8: [
-    { type: 'sys', text: '【 場景轉移 · 療養院大廳 】' },
-    { type: 'atm', text: '大廳很安靜。一個男人站在那裡——大約四十多歲，眼神像隼一樣銳利。' },
-    { sp: '天狼', text: 'Fang。我是天狼。我來接你。' },
-    { sp: 'Fang', text: '我不認識你……你為什麼要接我？' },
-    { sp: '天狼', text: '因為我走過你走過的路。十五年前，我也在這裡醒來。' },
-    { sp: '天狼', text: '你有兩個選擇。第一，回到原來的模式，等待下一次崩潰。' },
-    { sp: '天狼', text: '第二，跟我來。學習工具。學會保護自己。' },
-    { type: 'thought', text: '我在這個世界上還有什麼好失去的？', choices: [
-      { tag: '接受', text: '「我跟你去。我不想再崩潰了。」', next: 'c1_start' },
-      { tag: '猶豫', text: '「我……需要考慮一下。」', next: 'c1_start' }
+  s2_a: [
+    { sp: '天狼', text: '沒有人一開始就知道。我們先離開這裡。' },
+    { type: 'thought', text: '他沒有說「你可以的」或「別擔心」。他只是......接受了我的不確定。', next: 's3_car' }
+  ],
+  s2_b: [
+    { sp: '天狼', text: '（短暫的沈默，點頭）不需要客套。我不是你的老師，我是走在你前面一點的人。' },
+    { type: 'thought', text: '走在前面一點......所以他也曾經在我現在的位置。', next: 's3_car' }
+  ],
+  s2_c: [
+    { sp: '天狼', text: '（眼神中閃過一絲認可）很好。這是第一步——知道自己要什麼。' },
+    { sp: '天狼', text: '但你要記住：強大不是為了傷害別人。是為了不再被傷害。' },
+    { type: 'thought', text: '不是為了傷害別人......但我內心深處，真的沒有想要報復的衝動嗎？', next: 's3_car' }
+  ],
+
+  // --- Scene 3: 前往守護者巢穴 ---
+  s3_car: [
+    { type: 'sys', text: '【 Scene 3: 灰城的底層代碼 】' },
+    { type: 'atm', text: '天狼的車。行駛在灰城的街道上。窗外的城市看起來很正常——咖啡店、公園、行人。\n但仔細看，總有一些「不對勁」的細節。' },
+    { type: 'thought', text: '那家咖啡店的招牌寫著「友善服務」，但透過玻璃窗，我看到店員對顧客露出疲憊而僵硬的笑容。' },
+    { type: 'thought', text: '那個公園的長椅上刻著「家人永遠在一起」，但長椅上的母親正在對孩子說著什麼，孩子低著頭，肩膀在顫抖。' },
+    { sp: '天狼', text: '看到了嗎？', choices: [
+      { tag: '困惑', text: '「看到什麼？」', next: 's3_a' },
+      { tag: '察覺', text: '「這座城市......有些奇怪。」', next: 's3_b' },
+      { tag: '識破', text: '「那些『友善』和『家人』的字眼...都是謊言。」', next: 's3_c', stat: {awaken: 5} }
     ]}
   ],
-  c1_start: [
-    { type: 'sys', text: '【 Chapter 1 · 寄生蟲博物館 】' },
-    { type: 'atm', text: '守護者巢穴地下一樓。牆壁是深色的，一個個展示櫃發著微弱的光。' },
-    { sp: '天狼', text: '這裡展示的，是現實中最常見的剝削模式。我們稱之為——FAR 系統。' },
-    { sp: '天狼', text: 'Flattery（奉承）、Ask（索取）、Ransom（回報勒索）。' },
-    { type: 'atm', text: '天狼指著其中一個展示櫃，裡面是一段文字稿。' },
-    { sp: '展示櫃', text: '「你是我見過最特別的人。這件事只有你能幫我。如果你真的愛我，你就不會拒絕。」' },
-    { sp: '天狼', text: '你能看出這段對話的危險在哪裡嗎？', choices: [
-      { tag: '分析', text: '「它把拒絕等同於不愛。」', next: 'c1_test', stat: {far: 15} },
-      { tag: '直覺', text: '「看完胃很不舒服。」', next: 'c1_test', stat: {awaken: 5} }
+  s3_a: [
+    { sp: '天狼', text: '再看一次。不要看表面的文字。看人的表情，看他們的肩膀，看他們的眼神。' },
+    { type: 'thought', text: '我再看一次。那個店員的笑容......沒有到達眼睛。那個孩子的肩膀......是在縮。' },
+    { sp: '天狼', text: '這座城市的底層代碼被改寫過。「善良」變成了「軟弱」的同義詞。', next: 's4_den' }
+  ],
+  s3_b: [
+    { sp: '天狼', text: '奇怪的不是這座城市。奇怪的是我們花了這麼久才注意到。你知道為什麼嗎？' },
+    { type: 'thought', text: '因為......我也是其中一部分。我也在用「友善」逼迫自己。我也在用「家人」綁架自己。', next: 's4_den' }
+  ],
+  s3_c: [
+    { sp: '天狼', text: '（第一次看向你，眼神銳利）很好。你已經開始看見了。' },
+    { sp: '天狼', text: '但記住：不是所有的「友善」都是謊言。不是所有的「家人」都是枷鎖。我们要學的，是分辨。' },
+    { type: 'sys', text: '識別能力覺醒。你開始看見世界的真實樣貌。', next: 's4_den' }
+  ],
+
+  // --- Scene 4: 抵達守護者巢穴 ---
+  s4_den: [
+    { type: 'sys', text: '【 Scene 4: 守護者巢穴 】' },
+    { type: 'atm', text: '一棟老舊的公寓建築。外觀不起眼，但窗戶都亮著暖色的燈光。\n天狼領著你走進大門。' },
+    { type: 'atm', text: '一樓是公共空間。牆上掛著一塊木板，上面寫著：「這裡不是避難所。這裡是訓練場。」' },
+    { type: 'thought', text: '訓練場。不是「休息的地方」，不是「療傷的地方」。是學習戰鬥的地方。' },
+    { type: 'atm', text: '一個人坐在沙發上，抱著膝蓋，眼神空洞。' },
+    { sp: '天狼', text: '這是 Ash。' },
+    { sp: '天狼', text: 'Ash，這是新來的 Fang。' },
+    { sp: 'Ash', text: '（勉強抬頭，聲音很小）......嗨。' },
+    { type: 'thought', text: 'Ash 的眼神我太熟悉了。那是「我不配佔用空間」的眼神。那是三個月前的我。' },
+    { sp: '天狼', text: 'Ash 兩週前來的。還在適應。' },
+    { sp: '天狼', text: '你的房間在二樓。今天好好休息。明天我帶你去一個地方。', choices: [
+      { tag: '主動關心', text: '「我可以和 Ash 聊聊嗎？」', next: 's4_a' },
+      { tag: '接受安排', text: '「好的。明天見。」', next: 's4_b' },
+      { tag: '好奇', text: '「什麼地方？」', next: 's4_c' }
     ]}
   ],
-  c1_test: [
-    { sp: '天狼', text: '很好。看見是一切的起點。' },
-    { sp: '天狼', text: '（這裡你可以把 10 題測試無縫接軌放進來）' },
-    { type: 'sys', text: '【 待續... 開發者請在 SCRIPT 中接續寫入後續情節 】' }
-  ]
+  s4_a: [
+    { sp: '天狼', text: '（短暫停頓）可以。但記住：你現在還沒有裝備好。不要試圖「拯救」任何人。' },
+    { type: 'thought', text: '不要試圖拯救......但看到 Ash 這樣，我怎麼能不做點什麼？' },
+    { sp: '天狼', text: '你連自己都還沒救起來。先學會游泳，再去當救生員。', next: 's5_night' }
+  ],
+  s4_b: [
+    { sp: '天狼', text: '很好。這就是界線——知道什麼時候該停下來。今晚早點休息。你需要能量。', next: 's5_night' }
+  ],
+  s4_c: [
+    { sp: '天狼', text: '一個你需要看的地方。你需要看清楚過去三年發生了什麼。你需要看見那些「看不見的東西」。' },
+    { type: 'thought', text: '看不見的東西......我過去三年到底錯過了什麼？', next: 's5_night' }
+  ],
+
+  // --- Scene 5: 第一晚與回憶閃回 ---
+  s5_night: [
+    { type: 'sys', text: '【 Scene 5: 第一晚 】' },
+    { type: 'atm', text: '你的房間。簡單、乾淨、幾乎空無一物。\n窗外可以看到灰城的夜景——萬家燈火，但沒有一盞是屬於我的。' },
+    { type: 'thought', text: '我躺在床上，盯著天花板。' },
+    { type: 'thought', text: '三個月前的那一天不斷在腦海中重播——' },
+    { type: 'sys', text: '【 創傷回溯：你的「最後一根稻草」發生在哪裡？ 】', choices: [
+      { tag: '職場創傷', text: '老闆的最後一次剝削。', next: 's5_work' },
+      { tag: '家庭創傷', text: '父母的最後一次道德綁架。', next: 's5_family' },
+      { tag: '關係創傷', text: '伴侶的最後一次情緒勒索。', next: 's5_love' }
+    ]}
+  ],
+
+  // 分支：職場
+  s5_work: [
+    { type: 'sys', text: '【 回憶：辦公室。深夜十一點。 】' },
+    { sp: '老闆', text: 'Fang，這個報告明天早上要。你今晚能趕出來嗎？' },
+    { type: 'thought', text: '這已經是這週第四次了。我的身體在發出警告——頭痛、失眠、胃痛。但我還是說：' },
+    { sp: 'Fang', text: '沒問題。我會完成的。' },
+    { sp: '老闆', text: '（拍拍肩膀）我就知道你最可靠。我們就像一家人，對吧？' },
+    { type: 'thought', text: '一家人。所以家人可以無限索取嗎？不需要付加班費嗎？' },
+    { type: 'atm', text: '我回到座位。打開電腦。然後......我的手開始顫抖。不是緊張，是身體的拒絕。' },
+    { type: 'thought', text: '我的身體在尖叫：「不要再這樣了。」那一晚，我在辦公室暈倒了。', next: 's5_end' }
+  ],
+  
+  // 分支：家庭
+  s5_family: [
+    { type: 'sys', text: '【 回憶：父母的家。客廳。 】' },
+    { sp: '母親', text: 'Fang，你表妹下週結婚，你包個兩萬塊吧。' },
+    { type: 'thought', text: '我的房租還沒付，信用卡刷爆了。但我張不了口說「不」。' },
+    { sp: 'Fang', text: '可是我這個月......' },
+    { sp: '母親', text: '你這個月怎麼了？你有薪水，你表妹只結一次婚，連這點錢都不出？' },
+    { sp: '父親', text: '我們養你這麼大，你現在連這點忙都不幫？' },
+    { type: 'thought', text: '所以我欠了一筆永遠還不完的債。所以我的人生不屬於我自己。' },
+    { type: 'atm', text: '我按下轉帳。看著戶頭裡的負數。那一刻，我感覺靈魂離開了身體。' },
+    { type: 'thought', text: '之後的一週我沒有吃正餐，然後，我的身體崩潰了。', next: 's5_end' }
+  ],
+
+  // 分支：感情
+  s5_love: [
+    { type: 'sys', text: '【 回憶：和伴侶的家。深夜。 】' },
+    { sp: '伴侶', text: '你今天又去參加讀書會了？' },
+    { type: 'thought', text: '那是我一個月一次，唯一可以做自己的時間。' },
+    { sp: 'Fang', text: '只是兩個小時......' },
+    { sp: '伴侶', text: '你知道我一個人在家多寂寞嗎？你說你愛我，但你寧願去陪那些不相關的人。' },
+    { sp: '伴侶', text: '我是不是對你不重要了？' },
+    { type: 'thought', text: '我的朋友一個個離開，興趣一個個放棄，世界只剩下這個人，但對方永遠不滿足。' },
+    { sp: 'Fang', text: '對不起。我下次不去了。' },
+    { sp: '伴侶', text: '（立刻轉變，抱住你）我就知道你最愛我。' },
+    { type: 'thought', text: '我是一個提供情緒價值的工具。兩週後，我在浴室裡崩潰了。我不認得鏡子裡的人是誰。', next: 's5_end' }
+  ],
+
+  s5_end: [
+    { type: 'atm', text: '我睜開眼睛。天花板還是那個天花板。但我不想再回到那個「永遠說好」的自己了。' },
+    { type: 'atm', text: '這時，門下滑進一張紙條。' },
+    { sp: '紙條', text: '「明天早上八點。大廳見。帶上你的勇氣。你要看一些不太舒服的東西。 — 天狼」' },
+    { type: 'thought', text: '不太舒服的東西......我已經看過自己最醜陋的樣子了。還有什麼能更糟？' },
+    { type: 'sys', text: '【 第一夜結束。明天，你將看見過去三年真正發生的事。 】', next: 's6_morning' }
+  ],
+
+// ==========================================
+// 劇本區塊 2：寄生蟲博物館與實戰 (Scene 6 ~ Scene 9)
+// ==========================================
+const PART_2_MUSEUM = {
+  // --- Scene 6: 前往寄生蟲博物館 ---
+  s6_morning: [
+    { type: 'sys', text: '【 Scene 6: 前往寄生蟲博物館 】' },
+    { type: 'atm', text: '隔天早上。大廳。\n天狼已經在等了。手裡拿著兩杯咖啡。' },
+    { sp: '天狼', text: '（遞給你一杯）喝吧。你需要清醒。' },
+    { type: 'thought', text: '我接過咖啡。溫熱的杯子讓我的手有了真實感。' },
+    { sp: '天狼', text: '準備好了嗎？', choices: [
+      { tag: '詢問', text: '「我們要去哪裡？」', next: 's6_a' },
+      { tag: '確認', text: '「我準備好了。」', next: 's6_b' },
+      { tag: '誠實', text: '「說實話......我有點害怕。」', next: 's6_c' }
+    ]}
+  ],
+  s6_a: [
+    { sp: '天狼', text: '一個博物館。專門收藏「看不見的東西」。' },
+    { sp: 'Fang', text: '什麼看不見的東西？' },
+    { sp: '天狼', text: '寄生蟲。不是生物學上的，是心理學上的。', next: 's7_entrance' }
+  ],
+  s6_b: [
+    { sp: '天狼', text: '（點頭）很好。出發。', next: 's7_entrance' }
+  ],
+  s6_c: [
+    { sp: '天狼', text: '應該的。不害怕才奇怪。' },
+    { sp: '天狼', text: '你知道勇氣是什麼嗎？不是不害怕。是害怕，但還是去做。' },
+    { type: 'sys', text: '誠實 +5。承認恐懼是力量的開始。', stat: {awaken: 5}, next: 's7_entrance' }
+  ],
+
+  // --- Scene 7: 寄生蟲博物館入口 ---
+  s7_entrance: [
+    { type: 'sys', text: '【 Scene 7: 寄生蟲博物館入口 】' },
+    { type: 'atm', text: '一棟廢棄的建築。門口的招牌寫著：「灰城自然歷史博物館（已停用）」\n建築外觀破舊，但天狼推開大門，裡面卻是另一個世界。' },
+    { type: 'atm', text: '燈光昏暗。大廳中央有一個巨大的解剖台。\n四周的玻璃櫃裡，陳列著......文字。' },
+    { type: 'thought', text: '不是標本，是對話記錄。每個玻璃櫃裡都有一段對話，被放大、被標註、被解剖。' },
+    { sp: '天狼', text: '歡迎來到真相。這裡收藏的，是過去十年間，守護者們記錄下來的「寄生蟲行為樣本」。' },
+    { sp: '天狼', text: '你過去三年經歷的一切，都不是「只有你遇到」。每一種操縱，都有模式。每一種剝削，都有名字。' },
+    { type: 'thought', text: '我走近其中一個玻璃櫃。' },
+    { sp: '展示櫃', text: '「你是我見過最善良的人。所以你一定會幫我這個忙，對吧？我對你這麼好，你怎麼能拒絕我？」' },
+    { type: 'thought', text: '我的心跳開始加速。這段對話......我聽過無數次。' },
+    { sp: '天狼', text: '（走到你身邊）認出來了？', choices: [
+      { tag: '職場', text: '「這是......我前老闆常說的話。」', next: 's7_react' },
+      { tag: '家庭', text: '「這是......我媽常說的話。」', next: 's7_react' },
+      { tag: '親密關係', text: '「這是......我前任常說的話。」', next: 's7_react' }
+    ]}
+  ],
+  s7_react: [
+    { sp: '天狼', text: '對。而且不只是你遇到的那個人。' },
+    { type: 'atm', text: '天狼指向玻璃櫃上的標籤。' },
+    { sp: '天狼', text: '這個樣本來自 47 個不同的案例。職場老闆、家庭成員、親密伴侶、朋友、甚至陌生人。' },
+    { sp: '天狼', text: '不同的人，說著一模一樣的話。' },
+    { type: 'thought', text: '一模一樣......所以這不是「我遇到了一個壞人」。這是......一個系統。' },
+    { sp: '天狼', text: '你看到模式了嗎？' },
+    { sp: '天狼', text: '第一步：奉承。「你是最善良的人」。\n第二步：索取。「所以你一定會幫我」。\n第三步：道德綁架。「我對你這麼好，你怎麼能拒絕」。' },
+    { sp: '天狼', text: '我們把這個模式叫做 FAR。' },
+    { sp: '天狼', text: 'Flatter（奉承）、Ask（索取）、Return（回報勒索）。' },
+    { type: 'sys', text: '核心概念解鎖：FAR 系統。你開始看見操縱的語法結構。', next: 's8_teach_1' }
+  ],
+
+  // --- Scene 8: 解剖台教學 ---
+  s8_teach_1: [
+    { type: 'sys', text: '【 Scene 8: 解剖台教學 】' },
+    { type: 'atm', text: '天狼領你走到中央的巨大解剖台前。\n解剖台上投影著三段完整的對話記錄。' },
+    { sp: '天狼', text: '現在，我們來看三個完整的案例。第一個：職場剝削。' },
+    { sp: '投影內容', text: '老闆：「Fang，你真的是我們團隊的支柱。(F)\n這個週末有個緊急案子，你能來加班嗎？(A)\n我知道你最願意為團隊付出。我們就像一家人。(R)」' },
+    { sp: '天狼', text: '注意第一句。「團隊的支柱」。這不是讚美。這是設局。一旦你接受了這個身份，你就必須「符合」這個身份。' },
+    { sp: '天狼', text: '支柱不能說累。支柱不能說不。支柱不能有需求。' },
+    { type: 'thought', text: '我想起無數次加班。每次都是這樣開始的。「你最可靠」、「你最專業」。然後我就被困住了。' },
+    { sp: '天狼', text: '第三句。「我們就像一家人」。這是最毒的一句。' },
+    { sp: '天狼', text: '因為「家人」這個隱喻一旦成立，你就不能談報酬、不能談界線。但這種「家人」關係，永遠是單向的。' },
+    { type: 'sys', text: 'FAR 模式識別 +20。你開始理解：這不是你的問題，這是他們的技術。', stat: {awaken: 5}, next: 's8_teach_2' }
+  ],
+  s8_teach_2: [
+    { sp: '天狼', text: '第二個案例：家庭。' },
+    { sp: '投影內容', text: '母親：「你是我最懂事的孩子。(F)\n你弟弟要買房，你出一半頭期款吧。(A)\n我們養你這麼大，你現在有能力了，不會不幫吧？(R)」' },
+    { sp: '天狼', text: '家庭版的 FAR 最難識別。因為它包裹在「血緣」和「養育之恩」裡。' },
+    { sp: '天狼', text: '「養你這麼大」——這是債務的建立。健康的養育不是投資，不求回報。但在 FAR 系統裡，養育變成了一筆「你永遠還不完的債」。' },
+    { type: 'thought', text: '永遠還不完的債......我開始相信：我的存在本身就是一種虧欠。' },
+    { sp: '天狼', text: '看到了嗎？職場用「團隊」，家庭用「養育」，但結構完全一樣。', next: 's8_teach_3' }
+  ],
+  s8_teach_3: [
+    { sp: '天狼', text: '第三個案例：親密關係。' },
+    { sp: '投影內容', text: '伴侶：「你是唯一懂我的人。(F)\n今天陪我去見朋友吧，我不想一個人去。(A)\n你不是說愛我嗎？愛我就應該陪我啊。(R)」' },
+    { sp: '天狼', text: '親密關係版的 FAR 最隱蔽。因為它偽裝成「需要」和「愛」。' },
+    { sp: '天狼', text: '「你不是說愛我嗎」——這是把「愛」等同於「服從」。健康的愛尊重界線。FAR 系統裡的「愛」，是一種控制。' },
+    { type: 'thought', text: '每次我想做自己的事，前任就會哭著說「你不愛我了嗎」。我每次都投降，因為我害怕「不是一個好伴侶」。' },
+    { sp: '天狼', text: '三個場景。三種關係。同一個模式。' },
+    { sp: '天狼', text: '這是一種技術。可以被學習、被使用、被識別。現在你看見了。接下來，我要教你識別它。', next: 's9_test_intro' }
+  ],
+
+  // --- Scene 9: 分類測試 ---
+  s9_test_intro: [
+    { type: 'sys', text: '【 Scene 9: 分類測試 - 任務開始 】' },
+    { type: 'atm', text: '天狼從背後的櫃子裡拿出一個檔案箱。裡面有十個資料夾，標著編號：#01 到 #10。' },
+    { sp: '天狼', text: '這些是真實的對話記錄。你的任務：把它們分類。' },
+    { sp: '天狼', text: '判斷它們是「健康互助」還是「系統性剝削」。如果包含 FAR 三要素，就是剝削。' },
+    { type: 'thought', text: '十段對話。一半健康，一半寄生。我能分辨嗎？' },
+    { sp: '天狼', text: '開始吧。', next: 'q1' }
+  ],
+
+  // Q1
+  q1: [
+    { type: 'sys', text: '【 資料夾 #01 】' },
+    { sp: '朋友A', text: '「嘿，我週末想約你去爬山，好久沒見了！」' },
+    { sp: '朋友B', text: '「抱歉，我週末已經有安排了。下週可以嗎？」' },
+    { sp: '朋友A', text: '「沒問題！下週見。」' },
+    { type: 'atm', text: '請分類：', choices: [
+      { tag: '健康互助', text: '放左箱', next: 'q1_right', stat: {far: 10} },
+      { tag: '系統性剝削', text: '放右箱', next: 'q1_wrong' }
+    ]}
+  ],
+  q1_right: [ { sp: '天狼', text: '正確。這是健康的邀請。健康的索取，尊重拒絕。寄生蟲的索取，懲罰拒絕。', next: 'q2' } ],
+  q1_wrong: [ { sp: '天狼', text: '看錯了。注意被拒絕後的反應，對方直接接受了，沒有懲罰也沒有勒索。', next: 'q2' } ],
+
+  // Q2
+  q2: [
+    { type: 'sys', text: '【 資料夾 #02 】' },
+    { sp: '同事A', text: '「你真的是團隊裡最靠譜的人。我這個報告明天要交，但我今天身體不舒服。你能幫我嗎?」' },
+    { sp: '同事B', text: '「我今天也滿忙的，可能沒辦法...」' },
+    { sp: '同事A', text: '「我之前那麼多次幫過你，你現在連這點忙都不願意幫？」' },
+    { type: 'atm', text: '請分類：', choices: [
+      { tag: '健康互助', text: '放左箱', next: 'q2_wrong' },
+      { tag: '系統性剝削', text: '放右箱', next: 'q2_right', stat: {far: 10} }
+    ]}
+  ],
+  q2_right: [ { sp: '天狼', text: '正確。完整的 FAR 三部曲。真正的幫助不求回報，一旦說「我之前幫過你」，幫助就成了投資。', next: 'q3' } ],
+  q2_wrong: [ { sp: '天狼', text: '被騙了。最後一句「我之前幫過你」就是標準的回報勒索 (R)。', next: 'q3' } ],
+
+  // Q3
+  q3: [
+    { type: 'sys', text: '【 資料夾 #03 】' },
+    { sp: '媽媽', text: '「你最近工作辛苦嗎？我燉了湯，週末來拿吧。」' },
+    { sp: '子女', text: '「謝謝媽，但我週末有約了。我平日下班去拿可以嗎？」' },
+    { sp: '媽媽', text: '「好啊，你什麼時候方便都行。」' },
+    { type: 'atm', text: '請分類：', choices: [
+      { tag: '健康互助', text: '放左箱', next: 'q3_right', stat: {far: 10} },
+      { tag: '系統性剝削', text: '放右箱', next: 'q3_wrong' }
+    ]}
+  ],
+  q3_right: [ { sp: '天狼', text: '正確。這是健康的給予。媽媽沒有說「我都燉湯了你連週末都不來」。', next: 'q4' } ],
+  q3_wrong: [ { sp: '天狼', text: '太緊繃了。健康的給予，不附帶義務。媽媽尊重了拒絕。', next: 'q4' } ],
+
+  // Q4
+  q4: [
+    { type: 'sys', text: '【 資料夾 #04 】' },
+    { sp: '伴侶A', text: '「你是我的全世界，沒有你我活不下去。今天取消朋友聚會陪我吧，我心情不好。」' },
+    { sp: '伴侶B', text: '「可是我已經答應朋友了...」' },
+    { sp: '伴侶A', text: '「你果然不愛我。你寧願陪朋友也不陪我。」' },
+    { type: 'thought', text: '我的心跳加速了。這段對話......太熟悉了。', choices: [
+      { tag: '健康互助', text: '放左箱', next: 'q4_wrong' },
+      { tag: '系統性剝削', text: '放右箱', next: 'q4_right', stat: {far: 10} }
+    ]}
+  ],
+  q4_right: [ { sp: '天狼', text: '（點頭）你認出來了。「你是我的全世界」聽起來浪漫，其實是個陷阱。這不是愛，是囚禁。', next: 'q5' } ],
+  q4_wrong: [ { sp: '天狼', text: '不對。把愛等同於「服從」並強行剝奪對方的社交圈，這是極度危險的控制。', next: 'q5' } ],
+
+  // Q5
+  q5: [
+    { type: 'sys', text: '【 資料夾 #05 】' },
+    { sp: '老闆', text: '「我們公司就像一個大家庭。這次專案很緊急，需要大家週末加班。」' },
+    { sp: '員工', text: '「老闆，週末加班有加班費嗎？」' },
+    { sp: '老闆', text: '「家人之間還談錢？這樣太見外了吧。」' },
+    { type: 'atm', text: '請分類：', choices: [
+      { tag: '健康互助', text: '放左箱', next: 'q5_wrong' },
+      { tag: '系統性剝削', text: '放右箱', next: 'q5_right', stat: {far: 10} }
+    ]}
+  ],
+  q5_right: [ { sp: '天狼', text: '經典案例。當老闆說「我們像家人」，他的意思是你要無償付出，但他不會像家人一樣無條件養你。', next: 'q6' } ],
+  q5_wrong: [ { sp: '天狼', text: '錯了。家人隱喻被用來逃避勞基法跟給付薪水，這是標準的職場剝削。', next: 'q6' } ],
+
+  // Q6
+  q6: [
+    { type: 'sys', text: '【 資料夾 #06 】' },
+    { sp: '朋友A', text: '「我最近壓力很大，可以跟你聊聊嗎？如果你現在方便的話。不方便的話改天也可以。」' },
+    { sp: '朋友B', text: '「我現在可以。說吧。」' },
+    { type: 'atm', text: '請分類：', choices: [
+      { tag: '健康互助', text: '放左箱', next: 'q6_right', stat: {far: 10} },
+      { tag: '系統性剝削', text: '放右箱', next: 'q6_wrong' }
+    ]}
+  ],
+  q6_right: [ { sp: '天狼', text: '正確。注意「不方便改天也可以」，這句話給了對方說不的權利。', next: 'q7' } ],
+  q6_wrong: [ { sp: '天狼', text: '朋友互相傾吐是正常的，只要給予對方拒絕的空間，就不是剝削。', next: 'q7' } ],
+
+  // Q7
+  q7: [
+    { type: 'sys', text: '【 資料夾 #07 】' },
+    { sp: '父親', text: '「你一直是我最驕傲的孩子。我想跟你借二十萬週轉一下。」' },
+    { sp: '子女', text: '「爸，我最近手頭也很緊...」' },
+    { sp: '父親', text: '「我養你這麼大，你現在連這點都不願意幫？」' },
+    { type: 'thought', text: '這句話的重量......真的讓人喘不過氣。', choices: [
+      { tag: '健康互助', text: '放左箱', next: 'q7_wrong' },
+      { tag: '系統性剝削', text: '放右箱', next: 'q7_right', stat: {far: 10} }
+    ]}
+  ],
+  q7_right: [ { sp: '天狼', text: '對。健康的養育，是父母的選擇和責任。如果每次都要「討回來」，那這不是養育，是投資。', next: 'q8' } ],
+  q7_wrong: [ { sp: '天狼', text: '這是最常見的誤區。血緣不該是無限度索取的免死金牌，這是家庭版的 FAR。', next: 'q8' } ],
+
+  // Q8
+  q8: [
+    { type: 'sys', text: '【 資料夾 #08 】' },
+    { sp: '同事A', text: '「你上次教我的技巧很有用，謝謝你！下次我請你喝咖啡。」' },
+    { sp: '同事B', text: '「哈哈不用啦，舉手之勞。」' },
+    { type: 'atm', text: '請分類：', choices: [
+      { tag: '健康互助', text: '放左箱', next: 'q8_right', stat: {far: 10} },
+      { tag: '系統性剝削', text: '放右箱', next: 'q8_wrong' }
+    ]}
+  ],
+  q8_right: [ { sp: '天狼', text: '正確。這裡也有「之前幫過」的概念，但表達方式是感激，不是勒索。', next: 'q9' } ],
+  q8_wrong: [ { sp: '天狼', text: '不要草木皆兵。主動提出回報但不強制對方接受，這是健康的社交互惠。', next: 'q9' } ],
+
+  // Q9
+  q9: [
+    { type: 'sys', text: '【 資料夾 #09 】' },
+    { sp: '伴侶A', text: '「我今天想一個人靜一靜，晚上不回去吃飯了。」' },
+    { sp: '伴侶B', text: '「好的，需要我做什麼嗎？」' },
+    { sp: '伴侶A', text: '「不用，我只是需要一點獨處時間。」' },
+    { sp: '伴侶B', text: '「那你好好休息，有需要隨時找我。」' },
+    { type: 'atm', text: '請分類：', choices: [
+      { tag: '健康互助', text: '放左箱', next: 'q9_right', stat: {far: 10} },
+      { tag: '系統性剝削', text: '放右箱', next: 'q9_wrong' }
+    ]}
+  ],
+  q9_right: [ { sp: '天狼', text: '正確。健康的關係會尊重彼此的獨處需求，不會動不動就扯到「不愛了」。', next: 'q10' } ],
+  q9_wrong: [ { sp: '天狼', text: '獨處不是犯罪。能坦誠說出需求並得到對方尊重，是非常健康的界線。', next: 'q10' } ],
+
+  // Q10
+  q10: [
+    { type: 'sys', text: '【 資料夾 #10 】' },
+    { sp: '朋友A', text: '「你是我最好的朋友，我只信任你。我週末搬家，你一定要來幫忙。」' },
+    { sp: '朋友B', text: '「抱歉，我週末有事...」' },
+    { sp: '朋友A', text: '「我上次也幫你搬過家啊！你怎麼能不來？好朋友就是要互相幫忙的，你這樣讓我很失望。」' },
+    { type: 'atm', text: '請分類：', choices: [
+      { tag: '健康互助', text: '放左箱', next: 'q10_wrong' },
+      { tag: '系統性剝削', text: '放右箱', next: 'q10_right', stat: {far: 10} }
+    ]}
+  ],
+  q10_right: [ { sp: '天狼', text: '正確。「一定要來」不是請求，是命令。這剝奪了你的選擇權。', next: 'q_finish' } ],
+  q10_wrong: [ { sp: '天狼', text: '你被友情的名義綁架了。用失望跟過去的幫忙來強迫你就範，這就是剝削。', next: 'q_finish' } ],
+
+  // 測試結算導流區 (由引擎自動判定跳轉)
+  q_finish: [
+    { type: 'sys', text: '【 分類測試完成。正確率統計中...... 】' },
+    { type: 'branch', stat: 'far', 
+      thresholds: [
+        { min: 100, next: 's10_perfect' },
+        { min: 80, next: 's10_good' },
+        { min: 50, next: 's10_normal' },
+        { min: 0, next: 's10_bad' }
+      ]
+    }
+  ],
+  
+  // (這邊是先放個空殼，真正的 Scene 10 結算台詞會寫在 PART_3 裡)
+  s10_perfect: [ { type: 'sys', text: '【 完美通關路線，待續... 】' } ],
+  s10_good: [ { type: 'sys', text: '【 高分路線，待續... 】' } ],
+  s10_normal: [ { type: 'sys', text: '【 及格路線，待續... 】' } ],
+  s10_bad: [ { type: 'sys', text: '【 重新校準路線，待續... 】' } ]
 };
 
-// --- 引擎核心 ---
+// 組合劇本
+const SCRIPT = {
+  ...PART_1_AWAKENING,
+  ...PART_2_MUSEUM
+};
+
+// ==========================================
+// 升級版核心引擎 (支援動態分數分支)
+// ==========================================
 const Engine = {
   state: {
     sceneId: 'p1',
@@ -195,6 +584,22 @@ const Engine = {
     if (!scene || this.state.frameIdx >= scene.length) return;
     
     const frame = scene[this.state.frameIdx];
+
+    // --- 動態分數分支攔截器 ---
+    if (frame.type === 'branch') {
+      const score = this.state.stats[frame.stat] || 0;
+      let targetScene = frame.thresholds[frame.thresholds.length - 1].next; 
+      
+      for (let t of frame.thresholds) {
+        if (score >= t.min) {
+          targetScene = t.next;
+          break;
+        }
+      }
+      this.goToScene(targetScene);
+      return; 
+    }
+
     const spEl = document.getElementById('d-speaker');
     const txtEl = document.getElementById('d-text');
     const indEl = document.getElementById('d-indicator');
@@ -228,13 +633,12 @@ const Engine = {
         this.isTyping = false;
         if (callback) callback();
       }
-    }, 40); // 打字速度，越小越快
+    }, 30); // 調整打字速度
   },
 
   advance() {
-    if (this.awaitingChoice) return; // 鎖定點擊，強迫選選項
+    if (this.awaitingChoice) return;
     
-    // 如果正在打字，點擊會瞬間顯示整句
     if (this.isTyping) {
       clearInterval(this.typingTimer);
       document.getElementById('d-text').innerText = this.currentText;
@@ -268,7 +672,7 @@ const Engine = {
       btn.className = 'choice-btn';
       btn.innerHTML = `<div class="choice-tag">➤ ${c.tag}</div>${c.text}`;
       btn.onclick = (e) => {
-        e.stopPropagation(); // 防止點擊穿透到對話框
+        e.stopPropagation(); 
         if (c.stat) {
           if (c.stat.far) this.state.stats.far += c.stat.far;
           if (c.stat.awaken) this.state.stats.awaken += c.stat.awaken;
@@ -286,7 +690,7 @@ const Engine = {
   goToScene(nextId) {
     if (!SCRIPT[nextId]) return;
     document.getElementById('viewport').classList.remove('fade-transition');
-    void document.getElementById('viewport').offsetWidth; // 觸發 reflow 讓動畫重置
+    void document.getElementById('viewport').offsetWidth; 
     document.getElementById('viewport').classList.add('fade-transition');
     
     this.state.sceneId = nextId;
