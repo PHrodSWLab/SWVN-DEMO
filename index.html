@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>獠牙與慈悲 | Fangs and Compassion</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;700;900&family=Noto+Sans+TC:wght@300;400;500;700&family=Cinzel:wght@400;700&display=swap');
+
+:root {
+  --ink: #0e0e14;
+  --paper: #f4f0e8;
+  --blood: #8b1a1a;
+  --fang: #c8a96e;
+  --ghost: #6b7a99;
+  --light: #e8dcc8;
+  --panel-bg: rgba(14,14,20,0.92);
+  --border: rgba(200,169,110,0.25);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--ink); color: var(--paper); font-family: 'Noto Sans TC', sans-serif; height: 100vh; overflow: hidden; user-select: none; }
+
+/* Noise Overlay */
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: 100; opacity: 0.03; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.screen { display: none; width: 100%; height: 100%; position: absolute; top: 0; left: 0; }
+.screen.active { display: flex; }
+
+/* --- Menu --- */
+#screen-menu { flex-direction: column; align-items: center; justify-content: center; background: radial-gradient(circle at 50% 30%, rgba(139,26,26,0.15) 0%, var(--ink) 60%); }
+.menu-title-zh { font-family: 'Noto Serif TC', serif; font-size: 3.5rem; font-weight: 900; letter-spacing: 0.4em; color: var(--fang); margin-bottom: 0.5rem; text-shadow: 0 0 20px rgba(200,169,110,0.3); }
+.menu-title-en { font-family: 'Cinzel', serif; font-size: 1rem; letter-spacing: 0.6em; color: var(--ghost); margin-bottom: 3rem; }
+.menu-nav { display: flex; flex-direction: column; gap: 1rem; width: 250px; }
+.menu-btn { background: transparent; border: 1px solid var(--border); color: var(--light); padding: 1rem; font-size: 1rem; letter-spacing: 0.2em; cursor: pointer; transition: all 0.3s; position: relative; }
+.menu-btn:hover:not(:disabled) { border-color: var(--fang); color: var(--fang); background: rgba(200,169,110,0.05); transform: translateX(5px); }
+.menu-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* --- VN Layout --- */
+#screen-game { flex-direction: column; }
+.hud { height: 40px; display: flex; align-items: center; justify-content: space-between; padding: 0 2rem; background: rgba(0,0,0,0.8); border-bottom: 1px solid var(--border); z-index: 10; font-family: 'Cinzel', serif; font-size: 0.8rem; color: var(--ghost); }
+.vn-viewport { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; }
+.scene-tag-display { position: absolute; top: 2rem; left: 2rem; font-family: 'Noto Serif TC', serif; color: var(--fang); font-size: 0.9rem; letter-spacing: 0.2em; opacity: 0.6; }
+
+/* Fixed Dialogue Box */
+.dialogue-wrapper { width: 100%; max-width: 900px; height: 30vh; min-height: 250px; margin: 0 auto 2rem; position: relative; display: flex; flex-direction: column; justify-content: flex-end; z-index: 20; }
+.dialogue-box { background: linear-gradient(to bottom, rgba(14,14,20,0.8), rgba(14,14,20,0.95)); border: 1px solid var(--border); border-top: 2px solid var(--fang); border-radius: 4px; padding: 2rem 2.5rem; cursor: pointer; position: relative; height: 200px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+.speaker-name { font-family: 'Noto Serif TC', serif; font-size: 1.2rem; font-weight: 700; color: var(--fang); letter-spacing: 0.1em; margin-bottom: 1rem; height: 1.5rem; }
+.dialogue-text { font-family: 'Noto Serif TC', serif; font-size: 1.15rem; color: var(--paper); line-height: 1.8; letter-spacing: 0.05em; height: calc(100% - 2.5rem); }
+.dialogue-text.thought { font-style: italic; color: rgba(244,240,232,0.7); }
+.dialogue-text.system { color: var(--ghost); text-align: center; font-family: 'Noto Sans TC', sans-serif; }
+.click-indicator { position: absolute; bottom: 1rem; right: 1.5rem; color: var(--fang); animation: bounce 1s infinite; font-size: 0.8rem; opacity: 0; }
+.click-indicator.show { opacity: 1; }
+
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(5px); } }
+
+/* Choices */
+.choices-container { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); display: flex; flex-direction: column; gap: 1rem; width: 100%; max-width: 600px; z-index: 30; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+.choices-container.active { pointer-events: auto; opacity: 1; }
+.choice-btn { background: rgba(14,14,20,0.9); border: 1px solid rgba(200,169,110,0.4); color: var(--light); padding: 1.2rem 2rem; font-family: 'Noto Serif TC', serif; font-size: 1.1rem; text-align: left; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+.choice-tag { font-family: 'Cinzel', serif; font-size: 0.7rem; color: var(--blood); margin-bottom: 0.3rem; letter-spacing: 0.2em; }
+.choice-btn:hover { background: rgba(200,169,110,0.1); border-color: var(--fang); padding-left: 2.5rem; }
+
+/* Visual Effects */
+.fade-transition { animation: fadeInOut 0.5s; }
+@keyframes fadeInOut { 0% { opacity: 0; } 100% { opacity: 1; } }
+</style>
+</head>
+<body>
+
+<div id="screen-menu" class="screen active">
+  <div class="menu-title-zh">獠牙與慈悲</div>
+  <div class="menu-title-en">FANGS & COMPASSION</div>
+  <div class="menu-nav">
+    <button class="menu-btn" onclick="Engine.newGame()">開始新遊戲</button>
+    <button class="menu-btn" id="btn-continue" disabled onclick="Engine.continueGame()">繼續遊戲</button>
+  </div>
+</div>
+
+<div id="screen-game" class="screen">
+  <div class="hud">
+    <span id="hud-chap">PROLOGUE</span>
+    <span>覺醒: <span id="hud-awaken" style="color:var(--fang)">0</span>% | FAR: <span id="hud-far" style="color:var(--fang)">0</span></span>
+    <span style="cursor:pointer" onclick="Engine.returnMenu()">返回選單</span>
+  </div>
+  
+  <div class="vn-viewport" id="viewport">
+    <div class="scene-tag-display" id="scene-tag"></div>
+    <div class="choices-container" id="choices-box"></div>
+  </div>
+
+  <div class="dialogue-wrapper">
+    <div class="dialogue-box" id="d-box" onclick="Engine.advance()">
+      <div class="speaker-name" id="d-speaker"></div>
+      <div class="dialogue-text" id="d-text"></div>
+      <div class="click-indicator" id="d-indicator">▼</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// --- 劇本資料 (改寫為 VN 扁平化結構) ---
+// 把原本的 atm, lines, thought 攤平成一個個 frame，這樣才能逐句點擊
+const SCRIPT = {
+  p1: [
+    { type: 'sys', text: '【 序章 · 崩潰的清晨 】' },
+    { type: 'atm', text: '白色的天花板。刺眼的日光燈。空氣中有消毒水的味道。窗外是灰色的天空。' },
+    { sp: 'Fang', text: '我……在哪裡……' },
+    { sp: 'Fang', text: '頭好痛……' },
+    { type: 'thought', text: '我試著回憶發生了什麼事。但腦子一片空白。只有一個模糊的感覺——我崩潰了。', next: 'p2' }
+  ],
+  p2: [
+    { type: 'atm', text: '我撐起身體，看向床頭櫃。一張折疊的卡片靜靜躺在那裡。' },
+    { sp: '卡片', text: '「歡迎來到灰城療養中心。您已經在這裡休息了三個月。今天是您的出院日。」' },
+    { type: 'thought', text: '三個月……我失去了三個月的時間。', choices: [
+      { tag: '職場創傷', text: '工作。老闆說「我們像一家人」。但我暈倒時沒人在乎。', next: 'p4', sys: '回憶：職場' },
+      { tag: '家庭創傷', text: '家庭。父母說「你欠我們的」。我轉出最後一筆錢後倒下了。', next: 'p4', sys: '回憶：家庭' },
+      { tag: '關係創傷', text: '感情。伴侶說「你是我的全世界」。我失去了所有朋友。', next: 'p4', sys: '回憶：關係' }
+    ]}
+  ],
+  p4: [
+    { type: 'atm', text: '記憶像刀子切過來。清晰得讓人想逃。' },
+    { sp: 'Fang', text: '（低聲）我記起來了……' },
+    { type: 'thought', text: '我以為「善良」就是答應所有人。但最後——我失去了自己。' },
+    { type: 'atm', text: '門打開了。一位護理師輕輕走進來。' },
+    { sp: '護理師', text: 'Fang，你醒了。感覺怎麼樣？' },
+    { sp: 'Fang', text: '我……不知道。' },
+    { sp: '護理師', text: '沒關係。慢慢來。你今天可以出院了。有人在外面等你。', choices: [
+      { tag: '感謝', text: '「謝謝你這三個月的照顧。」', next: 'p8' },
+      { tag: '警戒', text: '「我不認識會來接我的人……」', next: 'p8' }
+    ]}
+  ],
+  p8: [
+    { type: 'sys', text: '【 場景轉移 · 療養院大廳 】' },
+    { type: 'atm', text: '大廳很安靜。一個男人站在那裡——大約四十多歲，眼神像隼一樣銳利。' },
+    { sp: '天狼', text: 'Fang。我是天狼。我來接你。' },
+    { sp: 'Fang', text: '我不認識你……你為什麼要接我？' },
+    { sp: '天狼', text: '因為我走過你走過的路。十五年前，我也在這裡醒來。' },
+    { sp: '天狼', text: '你有兩個選擇。第一，回到原來的模式，等待下一次崩潰。' },
+    { sp: '天狼', text: '第二，跟我來。學習工具。學會保護自己。' },
+    { type: 'thought', text: '我在這個世界上還有什麼好失去的？', choices: [
+      { tag: '接受', text: '「我跟你去。我不想再崩潰了。」', next: 'c1_start' },
+      { tag: '猶豫', text: '「我……需要考慮一下。」', next: 'c1_start' }
+    ]}
+  ],
+  c1_start: [
+    { type: 'sys', text: '【 Chapter 1 · 寄生蟲博物館 】' },
+    { type: 'atm', text: '守護者巢穴地下一樓。牆壁是深色的，一個個展示櫃發著微弱的光。' },
+    { sp: '天狼', text: '這裡展示的，是現實中最常見的剝削模式。我們稱之為——FAR 系統。' },
+    { sp: '天狼', text: 'Flattery（奉承）、Ask（索取）、Ransom（回報勒索）。' },
+    { type: 'atm', text: '天狼指著其中一個展示櫃，裡面是一段文字稿。' },
+    { sp: '展示櫃', text: '「你是我見過最特別的人。這件事只有你能幫我。如果你真的愛我，你就不會拒絕。」' },
+    { sp: '天狼', text: '你能看出這段對話的危險在哪裡嗎？', choices: [
+      { tag: '分析', text: '「它把拒絕等同於不愛。」', next: 'c1_test', stat: {far: 15} },
+      { tag: '直覺', text: '「看完胃很不舒服。」', next: 'c1_test', stat: {awaken: 5} }
+    ]}
+  ],
+  c1_test: [
+    { sp: '天狼', text: '很好。看見是一切的起點。' },
+    { sp: '天狼', text: '（這裡你可以把 10 題測試無縫接軌放進來）' },
+    { type: 'sys', text: '【 待續... 開發者請在 SCRIPT 中接續寫入後續情節 】' }
+  ]
+};
+
+// --- 引擎核心 ---
+const Engine = {
+  state: {
+    sceneId: 'p1',
+    frameIdx: 0,
+    stats: { awaken: 0, far: 0 }
+  },
+  typingTimer: null,
+  isTyping: false,
+  currentText: '',
+  awaitingChoice: false,
+
+  newGame() {
+    this.state = { sceneId: 'p1', frameIdx: 0, stats: { awaken: 0, far: 0 } };
+    this.updateHUD();
+    document.getElementById('screen-menu').classList.remove('active');
+    document.getElementById('screen-game').classList.add('active');
+    this.renderFrame();
+  },
+
+  updateHUD() {
+    document.getElementById('hud-awaken').innerText = this.state.stats.awaken;
+    document.getElementById('hud-far').innerText = this.state.stats.far;
+  },
+
+  renderFrame() {
+    const scene = SCRIPT[this.state.sceneId];
+    if (!scene || this.state.frameIdx >= scene.length) return;
+    
+    const frame = scene[this.state.frameIdx];
+    const spEl = document.getElementById('d-speaker');
+    const txtEl = document.getElementById('d-text');
+    const indEl = document.getElementById('d-indicator');
+    
+    indEl.classList.remove('show');
+    spEl.innerText = frame.sp || '';
+    txtEl.className = 'dialogue-text';
+    
+    if (frame.type === 'thought') { spEl.innerText = '內心'; txtEl.classList.add('thought'); }
+    if (frame.type === 'atm') { spEl.innerText = ''; txtEl.classList.add('thought'); }
+    if (frame.type === 'sys') { spEl.innerText = '系統'; txtEl.classList.add('system'); }
+
+    this.typeText(frame.text, txtEl, () => {
+      indEl.classList.add('show');
+      if (frame.choices) this.showChoices(frame.choices);
+    });
+  },
+
+  typeText(text, el, callback) {
+    clearInterval(this.typingTimer);
+    this.isTyping = true;
+    this.currentText = text;
+    el.innerText = '';
+    let i = 0;
+    
+    this.typingTimer = setInterval(() => {
+      el.innerText += text.charAt(i);
+      i++;
+      if (i >= text.length) {
+        clearInterval(this.typingTimer);
+        this.isTyping = false;
+        if (callback) callback();
+      }
+    }, 40); // 打字速度，越小越快
+  },
+
+  advance() {
+    if (this.awaitingChoice) return; // 鎖定點擊，強迫選選項
+    
+    // 如果正在打字，點擊會瞬間顯示整句
+    if (this.isTyping) {
+      clearInterval(this.typingTimer);
+      document.getElementById('d-text').innerText = this.currentText;
+      this.isTyping = false;
+      const frame = SCRIPT[this.state.sceneId][this.state.frameIdx];
+      document.getElementById('d-indicator').classList.add('show');
+      if (frame.choices) this.showChoices(frame.choices);
+      return;
+    }
+
+    const scene = SCRIPT[this.state.sceneId];
+    const frame = scene[this.state.frameIdx];
+
+    if (frame.next && !frame.choices) {
+      this.goToScene(frame.next);
+    } else if (!frame.choices) {
+      this.state.frameIdx++;
+      if (this.state.frameIdx < scene.length) {
+        this.renderFrame();
+      }
+    }
+  },
+
+  showChoices(choices) {
+    this.awaitingChoice = true;
+    const container = document.getElementById('choices-box');
+    container.innerHTML = '';
+    
+    choices.forEach(c => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.innerHTML = `<div class="choice-tag">➤ ${c.tag}</div>${c.text}`;
+      btn.onclick = (e) => {
+        e.stopPropagation(); // 防止點擊穿透到對話框
+        if (c.stat) {
+          if (c.stat.far) this.state.stats.far += c.stat.far;
+          if (c.stat.awaken) this.state.stats.awaken += c.stat.awaken;
+          this.updateHUD();
+        }
+        container.classList.remove('active');
+        this.awaitingChoice = false;
+        this.goToScene(c.next);
+      };
+      container.appendChild(btn);
+    });
+    container.classList.add('active');
+  },
+
+  goToScene(nextId) {
+    if (!SCRIPT[nextId]) return;
+    document.getElementById('viewport').classList.remove('fade-transition');
+    void document.getElementById('viewport').offsetWidth; // 觸發 reflow 讓動畫重置
+    document.getElementById('viewport').classList.add('fade-transition');
+    
+    this.state.sceneId = nextId;
+    this.state.frameIdx = 0;
+    this.renderFrame();
+  },
+
+  returnMenu() {
+    document.getElementById('screen-game').classList.remove('active');
+    document.getElementById('screen-menu').classList.add('active');
+  }
+};
+</script>
+</body>
+</html>
